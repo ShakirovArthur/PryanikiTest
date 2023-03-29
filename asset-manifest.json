@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/PryanikiTest/static/css/main.073c9b0a.css",
+    "main.js": "/PryanikiTest/static/js/main.4764fb91.js",
+    "index.html": "/PryanikiTest/index.html",
+    "main.073c9b0a.css.map": "/PryanikiTest/static/css/main.073c9b0a.css.map",
+    "main.4764fb91.js.map": "/PryanikiTest/static/js/main.4764fb91.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.4764fb91.js"
+  ]
+}
