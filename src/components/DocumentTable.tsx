@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect,  useState } from 'react';
 import {
-	Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+	Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
 import { DocumentEditor } from './DocumentEditor';
-import { DeleteDocument } from './DeleteDocument';
-import CreateIcon from '@mui/icons-material/Create';
-import { createDocument, deleteDocumentById, documentChange, fetchDocuments } from "./api/PryanikyAPI";
-import { Document, NewDocument } from "./types/Document";
-import { Loader } from "./Loader";
+import { DocumentDeleteIcon } from './DocumentDeleteIcon';
+import { createDocument, deleteDocumentById, changeDocument, fetchDocuments } from "../api/PryanikyAPI";
+import { Document, NewDocument } from "../types/Document";
+import { Loader } from "../assets/Loader";
+import { DocumentChangeIcon } from "./DocumentChangeIcon";
 
 
-const token:string|null = localStorage.getItem('x-auth');
+const token: string | null = localStorage.getItem('x-auth');
 
 
 const initialDocument: NewDocument = {
@@ -26,9 +26,9 @@ const initialDocument: NewDocument = {
 export const DocumentPage = () => {
 	const [documents, setDocuments] = useState<Document[]>([]);
 	const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-	const [selectedDocument, setSelectedDocument] = useState<Document | NewDocument>();// вот тут
+	const [selectedDocument, setSelectedDocument] = useState<Document | NewDocument>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	// const [newDocument] = useState<NewDocument>(initialDocument);
+
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -56,7 +56,7 @@ export const DocumentPage = () => {
 	const updateDocument = useCallback(async (document: Document) => {
 		setIsLoading(true);
 		try {
-			const response = await documentChange(document);
+			const response = await changeDocument(document);
 			setDocuments(documents.map((doc: Document) => doc.id === response.data.id ? response.data : doc));
 		} catch (error) {
 			console.error('Error updating document:', error);
@@ -72,15 +72,18 @@ export const DocumentPage = () => {
 		setIsLoading(false);
 	}, [documents]);
 
-	const onSave = useCallback(async (document: Document | NewDocument): Promise<void> => {
-		if ((document as Document).id !== undefined) { // вот тут
+	const saveDocument = useCallback(async (document: Document | NewDocument): Promise<void> => {
+		setIsLoading(true);
+		if ((document as Document).id !== undefined) {
 			await updateDocument(document as Document);
 		} else {
 			await creatingNewDocument(document as NewDocument);
 		}
+		closeForm();
+		setIsLoading(false);
 	}, [creatingNewDocument, updateDocument]);
 
-	const convertTime = useMemo(() => (time: string): string => {
+	const convertTime = useCallback((time: string): string => {
 		const date = new Date(time);
 		return date.toLocaleString();
 	}, []);
@@ -93,15 +96,13 @@ export const DocumentPage = () => {
 	const closeForm = useCallback((): void => {
 		setIsFormOpen(false);
 	}, [setIsFormOpen]);
+	const handleNewDocument = useCallback(():void => {
+		toggleForm(initialDocument)
+	},[])
 
-	if (isLoading) {
-		return (<div>
-			<Loader onLoading={isLoading}/>
-		</div>);
-	}
 
 	return (<div>
-
+		{isLoading ? <Loader onLoading={isLoading} /> : null}
 		<TableContainer component={Paper}>
 			<Table sx={{minWidth: 650}} aria-label="simple table">
 				<TableHead>
@@ -133,18 +134,16 @@ export const DocumentPage = () => {
 						<TableCell align="right">{convertTime(document?.employeeSigDate)}</TableCell>
 						<TableCell align="right">{document?.employeeSignatureName}</TableCell>
 						<TableCell align="right">
-							<IconButton onClick={() => toggleForm(document)}>
-								<CreateIcon fontSize="inherit"/>
-							</IconButton>
-							<DeleteDocument id={document?.id} onDeleteDocument={deleteDocument}/>
+							<DocumentChangeIcon document={document} onToggleForm={toggleForm}/>
+							<DocumentDeleteIcon id={document?.id} onDelete={deleteDocument}/>
 						</TableCell>
 					</TableRow>))}
 				</TableBody>
 			</Table>
 		</TableContainer>
-		<Button onClick={() => toggleForm(initialDocument)}>Добавить запись</Button>
-		{isFormOpen && selectedDocument && <DocumentEditor open={isFormOpen} onClose={closeForm} onSaveDocument={onSave}
-                                                           document={selectedDocument}/>}
+		<Button onClick={handleNewDocument}>Добавить запись</Button>
+		{isFormOpen && selectedDocument && <DocumentEditor open={isFormOpen} onClose={closeForm} onSave={saveDocument}
+                                                           document={selectedDocument} loading={isLoading}/>}
 	</div>);
 };
 

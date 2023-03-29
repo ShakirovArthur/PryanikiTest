@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { NewDocument,Document } from "../types/Document";
 
 
-export const DocumentChange = ({document, onToggleForm}: {
+export const DocumentChangeIcon = ({document, onToggleForm}: {
 	document: Document,
 	onToggleForm: (document: Document | NewDocument) => void
 }) => {

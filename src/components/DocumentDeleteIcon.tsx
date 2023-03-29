@@ -3,12 +3,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useCallback } from "react";
 
 
-export const DeleteDocument = ({id, onDeleteDocument}: {
-	id: string, onDeleteDocument: (id: string) => void
+export const DocumentDeleteIcon = ({id, onDelete}: {
+	id: string, onDelete: (id: string) => void
 }) => {
 	const handleDeletePost = useCallback((): void => {
-		onDeleteDocument(id);
-	}, [onDeleteDocument, id]);
+		onDelete(id);
+	}, [onDelete, id]);
 
 	return (<IconButton aria-label="delete" size="small" onClick={handleDeletePost}>
 		<DeleteIcon fontSize="inherit"/>

@@ -1,4 +1,4 @@
-import { Document, NewDocument } from "./types/Document";
+import { Document, NewDocument } from "../types/Document";
 
 
 
@@ -14,12 +14,12 @@ export async function authentication(username: string, password: string) {
 			}),
 		});
 		const answer = await response.json();
-		if (response.ok) {
+		if (response.ok && answer.data) {
 			const token: any = answer.data.token;
 			localStorage.setItem('x-auth', token);
 			return {isAuthenticated: true, error: undefined};
 		} else {
-			const error = new Error(answer.message);
+			const error = new Error(answer.error_text);
 			return {error, isAuthenticated: false};
 		}
 	} catch (error:any) {
@@ -33,8 +33,7 @@ export async function fetchDocuments(token: string): Promise<any> {
 			'Content-Type': 'application/json', 'x-auth': `${token}`,
 		},
 	});
-	const data = await response.json();
-	return data;
+	return await response.json();
 }
 
 export async function createDocument(newPostData: NewDocument): Promise<any> {
@@ -44,19 +43,17 @@ export async function createDocument(newPostData: NewDocument): Promise<any> {
 			'Content-Type': 'application/json', 'x-auth': `${token}`,
 		}, body: JSON.stringify(newPostData),
 	});
-	const data = await response.json();
-	return data;
+	return await response.json();
 }
 
-export async function documentChange(document: Document): Promise<any> {
+export async function changeDocument(document: Document): Promise<any> {
 	const token = localStorage.getItem('x-auth');
 	const response = await fetch(`${HOST}/ru/data/v3/testmethods/docs/userdocs/set/${document.id}`, {
 		method: 'POST', headers: {
 			'Content-Type': 'application/json', 'x-auth': `${token}`,
 		}, body: JSON.stringify(document),
 	});
-	const data = await response.json();
-	return data;
+	return await response.json();
 }
 
 export async function deleteDocumentById(id: string): Promise<void> {
