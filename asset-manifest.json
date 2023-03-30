@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/PryanikiTest/static/css/main.073c9b0a.css",
-    "main.js": "/PryanikiTest/static/js/main.ceee4fa7.js",
+    "main.js": "/PryanikiTest/static/js/main.2933e3f6.js",
     "index.html": "/PryanikiTest/index.html",
     "main.073c9b0a.css.map": "/PryanikiTest/static/css/main.073c9b0a.css.map",
-    "main.ceee4fa7.js.map": "/PryanikiTest/static/js/main.ceee4fa7.js.map"
+    "main.2933e3f6.js.map": "/PryanikiTest/static/js/main.2933e3f6.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.ceee4fa7.js"
+    "static/js/main.2933e3f6.js"
   ]
 }
