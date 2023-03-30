@@ -7,7 +7,7 @@ export interface NewDocument {
 	employeeNumber: string,
 	employeeSigDate: string,
 	employeeSignatureName: string,
-	
+
 }
 
 export interface Document extends NewDocument {

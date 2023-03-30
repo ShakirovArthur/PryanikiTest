@@ -4,12 +4,12 @@ import { Document, NewDocument } from "../types/Document";
 import { Loader } from "../assets/Loader";
 
 
-export const DocumentEditor = ({open, onSave,onClose, document,loading}: {
+export const DocumentEditor = ({open, onSave, onClose, document, loading}: {
 	open: boolean,
 	onClose: () => void,
 	onSave: (document: Document | NewDocument) => void,
 	document: Document | NewDocument,
-	loading:boolean
+	loading: boolean
 }) => {
 	const [currentDocument, setCurrentDocument] = useState<Document | NewDocument>(document);
 
@@ -31,102 +31,100 @@ export const DocumentEditor = ({open, onSave,onClose, document,loading}: {
 		return `${year}-${month}-${day}`;
 	}, []);
 
-	return (
-		<>
-		<Dialog open={open} >
-			<DialogTitle>Добавить новую запись</DialogTitle>
-			<DialogContent>
-				{loading && <Loader onLoading={loading}/>}
-				<form
-					onSubmit={handleFormSubmit}>
+	return (<>
+			<Dialog open={open}>
+				<DialogTitle>Добавить новую запись</DialogTitle>
+				<DialogContent>
+					{loading && <Loader onLoading={loading}/>}
+					<form
+						onSubmit={handleFormSubmit}>
 
-					<TextField
-						type="date"
-						name="companySigDate"
-						InputLabelProps={{shrink: true}}
-						label="Дата подписания компании"
-						value={convertTime(currentDocument?.companySigDate)}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="companySignatureName"
-						label="Имя подписавшего представителя компании"
-						value={currentDocument?.companySignatureName}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="documentName"
-						label="Название документа"
-						value={currentDocument?.documentName}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="documentStatus"
-						label="Статус документа"
-						value={currentDocument?.documentStatus}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="documentType"
-						label="Тип документа"
-						value={currentDocument?.documentType}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="employeeNumber"
-						label="Номер сотрудника"
-						value={currentDocument?.employeeNumber}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="employeeSigDate"
-						type="date"
-						InputLabelProps={{shrink: true}}
-						label="Дата подписи сотрудника"
-						value={convertTime(currentDocument?.employeeSigDate)}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
-					<TextField
-						name="employeeSignatureName"
-						label="Имя подписавшего представителя сотрудника"
-						value={currentDocument?.employeeSignatureName}
-						onChange={handleChange}
-						fullWidth
-						margin="normal"
-						required
-					/>
+						<TextField
+							type="date"
+							name="companySigDate"
+							InputLabelProps={{shrink: true}}
+							label="Дата подписания компании"
+							value={convertTime(currentDocument?.companySigDate)}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="companySignatureName"
+							label="Имя подписавшего представителя компании"
+							value={currentDocument?.companySignatureName}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="documentName"
+							label="Название документа"
+							value={currentDocument?.documentName}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="documentStatus"
+							label="Статус документа"
+							value={currentDocument?.documentStatus}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="documentType"
+							label="Тип документа"
+							value={currentDocument?.documentType}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="employeeNumber"
+							label="Номер сотрудника"
+							value={currentDocument?.employeeNumber}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="employeeSigDate"
+							type="date"
+							InputLabelProps={{shrink: true}}
+							label="Дата подписи сотрудника"
+							value={convertTime(currentDocument?.employeeSigDate)}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
+						<TextField
+							name="employeeSignatureName"
+							label="Имя подписавшего представителя сотрудника"
+							value={currentDocument?.employeeSignatureName}
+							onChange={handleChange}
+							fullWidth
+							margin="normal"
+							required
+						/>
 
 
-					<DialogActions>
-						<Button onClick={onClose}>Отмена</Button>
-						<Button type="submit" color="primary">Сохранить</Button>
-					</DialogActions>
-				</form>
-			</DialogContent>
+						<DialogActions>
+							<Button onClick={onClose}>Отмена</Button>
+							<Button type="submit" color="primary">Сохранить</Button>
+						</DialogActions>
+					</form>
+				</DialogContent>
 
-		</Dialog>
+			</Dialog>
 
-		</>
-		);
+		</>);
 };

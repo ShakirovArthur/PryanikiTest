@@ -2,7 +2,7 @@ import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { Button, FormControl, Grid, TextField } from '@mui/material';
 import { DocumentPage } from "./DocumentTable";
 import { authentication } from "../api/PryanikyAPI";
-import {Loader} from "../assets/Loader";
+import { Loader } from "../assets/Loader";
 
 
 export const LoginPage = () => {
@@ -26,8 +26,8 @@ export const LoginPage = () => {
 		event.preventDefault();
 		setError(null);
 		setIsLoading(true);
-		const { error} = await authentication(username, password);
-		if (error.message) {
+		const {error} = await authentication(username, password);
+		if (error?.message) {
 			setError(error.message ? error.message : 'Unknown error');
 		} else {
 			setIsAuthenticated(true);

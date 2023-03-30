@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect,  useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
@@ -96,13 +96,13 @@ export const DocumentPage = () => {
 	const closeForm = useCallback((): void => {
 		setIsFormOpen(false);
 	}, [setIsFormOpen]);
-	const handleNewDocument = useCallback(():void => {
-		toggleForm(initialDocument)
-	},[])
+	const handleNewDocument = useCallback((): void => {
+		toggleForm(initialDocument);
+	}, []);
 
 
 	return (<div>
-		{isLoading ? <Loader onLoading={isLoading} /> : null}
+		{isLoading ? <Loader onLoading={isLoading}/> : null}
 		<TableContainer component={Paper}>
 			<Table sx={{minWidth: 650}} aria-label="simple table">
 				<TableHead>

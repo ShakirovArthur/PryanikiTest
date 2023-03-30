@@ -1,7 +1,6 @@
 import { Document, NewDocument } from "../types/Document";
 
 
-
 const HOST = 'https://test.v5.pryaniky.com';
 
 export async function authentication(username: string, password: string) {
@@ -22,7 +21,7 @@ export async function authentication(username: string, password: string) {
 			const error = new Error(answer.error_text);
 			return {error, isAuthenticated: false};
 		}
-	} catch (error:any) {
+	} catch (error: any) {
 		return {error};
 	}
 }
