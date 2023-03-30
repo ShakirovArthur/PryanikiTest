@@ -1,6 +1,6 @@
-import { IconButton } from "@mui/material";
+import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { useCallback } from "react";
+import React, { useCallback } from 'react';
 
 
 export const DocumentDeleteIcon = ({id, onDelete}: {

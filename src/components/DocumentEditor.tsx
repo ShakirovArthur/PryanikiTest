@@ -1,29 +1,29 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import React, { ChangeEvent, FormEvent, useCallback, useState } from "react";
-import { Document, NewDocument } from "../types/Document";
-import { Loader } from "../assets/Loader";
+import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
+import { Document, NewDocument } from '../types/Document';
+import { Loader } from '../assets/Loader';
 
+const dateLabelProps = { shrink: true };
 
-export const DocumentEditor = ({open, onSave, onClose, document, loading}: {
-	open: boolean,
+export const DocumentEditor = ({onSave, onClose, document, isSaving}: {
 	onClose: () => void,
 	onSave: (document: Document | NewDocument) => void,
 	document: Document | NewDocument,
-	loading: boolean
+	isSaving: boolean
 }) => {
-	const [currentDocument, setCurrentDocument] = useState<Document | NewDocument>(document);
+	const [currentDocument, setCurrentDocument] = useState(document);
 
-	const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>): void => {
+	const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		const {name, value} = event.target;
 		setCurrentDocument((prevData: any) => ({...prevData, [name]: value}));
 	}, [setCurrentDocument]);
 
-	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>): void => {
+	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		onSave(currentDocument);
 	}, [currentDocument, onSave]);
 
-	const convertTime = useCallback((time: string): string => {
+	const convertTime = useCallback((time: string) => {
 		const date = new Date(time);
 		const year = date.getFullYear();
 		const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -31,18 +31,17 @@ export const DocumentEditor = ({open, onSave, onClose, document, loading}: {
 		return `${year}-${month}-${day}`;
 	}, []);
 
-	return (<>
-			<Dialog open={open}>
+	return (
+			<Dialog open={true}>
 				<DialogTitle>Добавить новую запись</DialogTitle>
 				<DialogContent>
-					{loading && <Loader onLoading={loading}/>}
+					{isSaving && <Loader />}
 					<form
 						onSubmit={handleFormSubmit}>
-
 						<TextField
 							type="date"
 							name="companySigDate"
-							InputLabelProps={{shrink: true}}
+							InputLabelProps={dateLabelProps}
 							label="Дата подписания компании"
 							value={convertTime(currentDocument?.companySigDate)}
 							onChange={handleChange}
@@ -98,7 +97,7 @@ export const DocumentEditor = ({open, onSave, onClose, document, loading}: {
 						<TextField
 							name="employeeSigDate"
 							type="date"
-							InputLabelProps={{shrink: true}}
+							InputLabelProps={dateLabelProps}
 							label="Дата подписи сотрудника"
 							value={convertTime(currentDocument?.employeeSigDate)}
 							onChange={handleChange}
@@ -115,16 +114,11 @@ export const DocumentEditor = ({open, onSave, onClose, document, loading}: {
 							margin="normal"
 							required
 						/>
-
-
 						<DialogActions>
 							<Button onClick={onClose}>Отмена</Button>
 							<Button type="submit" color="primary">Сохранить</Button>
 						</DialogActions>
 					</form>
 				</DialogContent>
-
-			</Dialog>
-
-		</>);
+			</Dialog>);
 };

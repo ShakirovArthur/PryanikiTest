@@ -4,13 +4,10 @@ import {
 } from '@mui/material';
 import { DocumentEditor } from './DocumentEditor';
 import { DocumentDeleteIcon } from './DocumentDeleteIcon';
-import { createDocument, deleteDocumentById, changeDocument, fetchDocuments } from "../api/PryanikyAPI";
-import { Document, NewDocument } from "../types/Document";
-import { Loader } from "../assets/Loader";
-import { DocumentChangeIcon } from "./DocumentChangeIcon";
-
-
-const token: string | null = localStorage.getItem('x-auth');
+import { createDocument, deleteDocumentById, changeDocument, fetchDocuments } from '../api/PryanikyAPI';
+import { Document, NewDocument } from '../types/Document';
+import { Loader } from '../assets/Loader';
+import { DocumentChangeIcon } from './DocumentChangeIcon';
 
 
 const initialDocument: NewDocument = {
@@ -23,32 +20,33 @@ const initialDocument: NewDocument = {
 	employeeSigDate: '',
 	employeeSignatureName: '',
 };
-export const DocumentPage = () => {
-	const [documents, setDocuments] = useState<Document[]>([]);
-	const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-	const [selectedDocument, setSelectedDocument] = useState<Document | NewDocument>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 
+const tableStyle = { minWidth: 650 };
+
+const rowStyle = { border: 0 };
+
+export const DocumentsPage = () => {
+	const [documents, setDocuments] = useState<Document[]>([]);
+	const [isFormOpen, setIsFormOpen] = useState(false);
+	const [selectedDocument, setSelectedDocument] = useState<Document | NewDocument>();
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		setIsLoading(true);
-		const token = localStorage.getItem('x-auth');
-		if (token) {
-			fetchDocuments(token)
-				.then((response) => setDocuments(response.data))
-				.catch((error) => console.error('Error fetching data:', error));
-		}
+		fetchDocuments()
+			.then((documents) => setDocuments(documents))
+			.catch((error) => console.error('Error fetching data:', error));
 		setIsLoading(false);
-	}, [token]);
+	}, []);
 
-	const creatingNewDocument = useCallback(async (newPostData: NewDocument) => {
+	const createNewDocument = useCallback(async (newPostData: NewDocument) => {
 		setIsLoading(true);
 		try {
-			const response = await createDocument(newPostData);
-			setDocuments([...documents, response.data]);
+			const document = await createDocument(newPostData);
+			setDocuments([...documents, document]);
 			setIsFormOpen(false);
 		} catch (error) {
-			console.error('Error creating new post:', error);
+			console.error('Error creating new document: ', error);
 		}
 		setIsLoading(false);
 	}, [documents, setIsFormOpen]);
@@ -56,55 +54,59 @@ export const DocumentPage = () => {
 	const updateDocument = useCallback(async (document: Document) => {
 		setIsLoading(true);
 		try {
-			const response = await changeDocument(document);
-			setDocuments(documents.map((doc: Document) => doc.id === response.data.id ? response.data : doc));
+			const updatedDocument = await changeDocument(document);
+			setDocuments(documents.map((doc: Document) => doc.id === updatedDocument.id ? updatedDocument : doc));
 		} catch (error) {
 			console.error('Error updating document:', error);
 		}
 		setIsLoading(false);
 	}, [documents, setDocuments]);
 
-	const deleteDocument = useCallback(async (id: string): Promise<void> => {
+	const handleDelete = useCallback(async (id: string) => {
 		setIsLoading(true);
-		await deleteDocumentById(id);
-		const updatedDocuments = documents.filter((doc) => doc.id !== id);
-		setDocuments(updatedDocuments);
+		try {
+			await deleteDocumentById(id);
+			const updatedDocuments = documents.filter((doc) => doc.id !== id);
+			setDocuments(updatedDocuments);
+		} catch (error) {
+			console.error('Error deleting document:', error);
+		}
 		setIsLoading(false);
 	}, [documents]);
 
-	const saveDocument = useCallback(async (document: Document | NewDocument): Promise<void> => {
+	const handleSave = useCallback(async (document: Document | NewDocument) => {
 		setIsLoading(true);
-		if ((document as Document).id !== undefined) {
-			await updateDocument(document as Document);
+		if ('id' in document && document.id) {
+			await updateDocument(document);
 		} else {
-			await creatingNewDocument(document as NewDocument);
+			await createNewDocument(document);
 		}
 		closeForm();
 		setIsLoading(false);
-	}, [creatingNewDocument, updateDocument]);
+	}, [createNewDocument, updateDocument]);
 
-	const convertTime = useCallback((time: string): string => {
+	const convertTime = useCallback((time: string) => {
 		const date = new Date(time);
 		return date.toLocaleString();
 	}, []);
 
-	const toggleForm = useCallback((document: Document | NewDocument): void => {
+	const toggleForm = useCallback((document: Document | NewDocument) => {
 		setIsFormOpen((prevState: boolean) => !prevState);
 		setSelectedDocument(document);
 	}, []);
 
-	const closeForm = useCallback((): void => {
+	const closeForm = useCallback(() => {
 		setIsFormOpen(false);
 	}, [setIsFormOpen]);
-	const handleNewDocument = useCallback((): void => {
+
+	const handleNewDocument = useCallback(() => {
 		toggleForm(initialDocument);
 	}, []);
 
-
-	return (<div>
-		{isLoading ? <Loader onLoading={isLoading}/> : null}
+	return (<>
+		{isLoading && <Loader />}
 		<TableContainer component={Paper}>
-			<Table sx={{minWidth: 650}} aria-label="simple table">
+			<Table sx={tableStyle} aria-label="simple table">
 				<TableHead>
 					<TableRow>
 						<TableCell>Дата подписи компании</TableCell>
@@ -121,7 +123,7 @@ export const DocumentPage = () => {
 				<TableBody>
 					{documents?.map((document: Document) => (<TableRow
 						key={document?.id}
-						sx={{'&:last-child td, &:last-child th': {border: 0}}}
+						sx={{'&:last-child td, &:last-child th': rowStyle}}
 					>
 						<TableCell component="th" scope="row">
 							{convertTime(document?.companySigDate)}
@@ -134,16 +136,16 @@ export const DocumentPage = () => {
 						<TableCell align="right">{convertTime(document?.employeeSigDate)}</TableCell>
 						<TableCell align="right">{document?.employeeSignatureName}</TableCell>
 						<TableCell align="right">
-							<DocumentChangeIcon document={document} onToggleForm={toggleForm}/>
-							<DocumentDeleteIcon id={document?.id} onDelete={deleteDocument}/>
+							<DocumentChangeIcon document={document} onChange={toggleForm}/>
+							<DocumentDeleteIcon id={document?.id} onDelete={handleDelete}/>
 						</TableCell>
 					</TableRow>))}
 				</TableBody>
 			</Table>
 		</TableContainer>
 		<Button onClick={handleNewDocument}>Добавить запись</Button>
-		{isFormOpen && selectedDocument && <DocumentEditor open={isFormOpen} onClose={closeForm} onSave={saveDocument}
-                                                           document={selectedDocument} loading={isLoading}/>}
-	</div>);
+		{isFormOpen && selectedDocument && <DocumentEditor onClose={closeForm} onSave={handleSave}
+                                                           document={selectedDocument} isSaving={isLoading}/>}
+	</>);
 };
 

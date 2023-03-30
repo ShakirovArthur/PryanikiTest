@@ -1,7 +1,13 @@
 import { Document, NewDocument } from "../types/Document";
 
+// NOTE: Весь код ниже можно заменить на полноценный сервис
 
 const HOST = 'https://test.v5.pryaniky.com';
+
+const getToken = () => localStorage.getItem('x-auth');
+const setToken = (token: string) => localStorage.setItem('x-auth', token);
+
+export const isAuthenticated = () => getToken() ? true : false;
 
 export async function authentication(username: string, password: string) {
 	try {
@@ -14,56 +20,52 @@ export async function authentication(username: string, password: string) {
 		});
 		const answer = await response.json();
 		if (response.ok && answer.data) {
-			const token: any = answer.data.token;
-			localStorage.setItem('x-auth', token);
+			const token: string = answer.data.token;
+			setToken(token);
 			return {isAuthenticated: true, error: undefined};
 		} else {
 			const error = new Error(answer.error_text);
-			return {error, isAuthenticated: false};
+			return {isAuthenticated: false, error};
 		}
 	} catch (error: any) {
-		return {error};
+		return {isAuthenticated: false, error};
 	}
 }
 
-export async function fetchDocuments(token: string): Promise<any> {
+export async function fetchDocuments(): Promise<any> {
 	const response = await fetch(`${HOST}/ru/data/v3/testmethods/docs/userdocs/get`, {
 		headers: {
-			'Content-Type': 'application/json', 'x-auth': `${token}`,
+			'Content-Type': 'application/json', 'x-auth': `${getToken()}`,
 		},
 	});
-	return await response.json();
+	const { data } = await response.json();
+	return data as Document[];
 }
 
-export async function createDocument(newPostData: NewDocument): Promise<any> {
-	const token = localStorage.getItem('x-auth');
+export async function createDocument(newDocument: NewDocument) {
 	const response = await fetch(`${HOST}/ru/data/v3/testmethods/docs/userdocs/create`, {
 		method: 'POST', headers: {
-			'Content-Type': 'application/json', 'x-auth': `${token}`,
-		}, body: JSON.stringify(newPostData),
+			'Content-Type': 'application/json', 'x-auth': `${getToken()}`,
+		}, body: JSON.stringify(newDocument),
 	});
-	return await response.json();
+	const { data } = await response.json();
+	return data as Document;
 }
 
-export async function changeDocument(document: Document): Promise<any> {
-	const token = localStorage.getItem('x-auth');
+export async function changeDocument(document: Document) {
 	const response = await fetch(`${HOST}/ru/data/v3/testmethods/docs/userdocs/set/${document.id}`, {
 		method: 'POST', headers: {
-			'Content-Type': 'application/json', 'x-auth': `${token}`,
+			'Content-Type': 'application/json', 'x-auth': `${getToken()}`,
 		}, body: JSON.stringify(document),
 	});
-	return await response.json();
+	const { data } = await response.json();
+	return data as Document;
 }
 
-export async function deleteDocumentById(id: string): Promise<void> {
-	try {
-		const token = localStorage.getItem('x-auth');
-		await fetch(`${HOST}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`, {
-			method: 'DELETE', headers: {
-				'x-auth': `${token}`,
-			},
-		});
-	} catch (error) {
-		console.error('Error deleting document:', error);
-	}
+export async function deleteDocumentById(id: string) {
+	await fetch(`${HOST}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`, {
+		method: 'DELETE', headers: {
+			'x-auth': `${getToken()}`,
+		},
+	});
 }

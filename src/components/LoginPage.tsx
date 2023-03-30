@@ -1,17 +1,16 @@
 import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { Button, FormControl, Grid, TextField } from '@mui/material';
-import { DocumentPage } from "./DocumentTable";
-import { authentication } from "../api/PryanikyAPI";
-import { Loader } from "../assets/Loader";
+import { DocumentsPage } from './DocumentsPage';
+import { authentication } from '../api/PryanikyAPI';
+import { Loader } from '../assets/Loader';
 
 
 export const LoginPage = () => {
-
-	const [username, setUsername] = useState<string>('');
-	const [password, setPassword] = useState<string>('');
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
 	const [error, setError] = useState(null);
-	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleUsernameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value);
@@ -26,26 +25,24 @@ export const LoginPage = () => {
 		event.preventDefault();
 		setError(null);
 		setIsLoading(true);
-		const {error} = await authentication(username, password);
+		const {isAuthenticated, error} = await authentication(username, password);
 		if (error?.message) {
 			setError(error.message ? error.message : 'Unknown error');
 		} else {
-			setIsAuthenticated(true);
+			setIsAuthenticated(isAuthenticated);
 		}
 		setIsLoading(false);
 	}, [username, password, setIsAuthenticated, setError]);
 
 	if (isLoading) {
-		return (<div>
-			<Loader onLoading={isLoading}/>
-		</div>);
+		return (<Loader/>);
 	}
 
+	// NOTE: Можно заменить на редирект с помощью react-router
 	if (isAuthenticated) {
-		return (<div>
-			<DocumentPage/>
-		</div>);
+		return (<DocumentsPage/>);
 	}
+
 	return (<Grid container justifyContent="center">
 		<Grid item xs={12} sm={6} md={4}>
 			<form onSubmit={handleSubmit}>
@@ -83,7 +80,6 @@ export const LoginPage = () => {
 						type="submit"
 						variant="contained"
 						color="primary"
-
 					>
 						Отправить
 					</Button>
